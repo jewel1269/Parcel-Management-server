@@ -6,7 +6,7 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri =
   'mongodb+srv://jewelmia2330:CWrhCInxthLXqZVE@cluster0.ofh3vpt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -27,6 +27,12 @@ async function run() {
     const userCollection = client
       .db('parcelSystemManagement')
       .collection('users');
+    const featuresCollection = client
+      .db('parcelSystemManagement')
+      .collection('features');
+    const bookingCollection = client
+      .db('parcelSystemManagement')
+      .collection('bookings');
 
     app.post('/users', async (req, res) => {
       const user = req.body;
@@ -40,10 +46,144 @@ async function run() {
       res.send(result);
     });
 
+    app.post('/bookings', async (req, res) => {
+      const item = req.body;
+      const result = await bookingCollection.insertOne(item);
+      res.send(result);
+    });
+
+    app.get('/bookings', async (req, res) => {
+      const result = await bookingCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/bookings/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.patch('/updateBooking/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const item = req.body;
+        console.log(it);
+
+        // Validate the ID format
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ message: 'Invalid ID format' });
+        }
+
+        const filter = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            phoneNumber: item.phoneNumber,
+            parcelType: item.parcelType,
+            parcelWeight: item.parcelWeight,
+            receiverName: item.receiverName,
+            receiverPhoneNumber: item.receiverPhoneNumber,
+            deliveryAddress: item.deliveryAddress,
+            deliveryDate: item.deliveryDate,
+            latitude: item.latitude,
+            longitude: item.longitude,
+          },
+        };
+
+        const result = await bookingCollection.updateOne(filter, updatedDoc);
+
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Booking not found' });
+        }
+
+        res.send({ message: 'Booking updated successfully', result });
+      } catch (error) {
+        console.error('Error updating booking:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
+    app.patch('/updateStatus/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const item = req.body;
+        console.log(item);
+
+        // Validate the ID format
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ message: 'Invalid ID format' });
+        }
+
+        const filter = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            status: item.status,
+          },
+        };
+        const result = await bookingCollection.updateOne(filter, updatedDoc);
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Booking not found' });
+        }
+
+        res.send({ message: 'Booking updated successfully', result });
+      } catch (error) {
+        console.error('Error updating booking:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
+    app.patch('/updateRole/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const item = req.body;
+        console.log(item);
+
+        // Validate the ID format
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ message: 'Invalid ID format' });
+        }
+
+        const filter = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            role: item.role,
+          },
+        };
+        const result = await bookingCollection.updateOne(filter, updatedDoc);
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Booking not found' });
+        }
+
+        res.send({ message: 'Booking updated successfully', result });
+      } catch (error) {
+        console.error('Error updating booking:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
+    app.get('/Spacificbookings', async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      const query = { email: email };
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/usersInfo', async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
-      const result = await userCollection.find(query).toArray();
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.get('/features', async (req, res) => {
+      const result = await featuresCollection.find().toArray();
       res.send(result);
     });
 
