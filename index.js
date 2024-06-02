@@ -8,7 +8,7 @@ app.use(cors());
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri =
-  'mongodb+srv://jewelmia2330:CWrhCInxthLXqZVE@cluster0.ofh3vpt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+  'mongodb+srv://juyelhabib272732:rz3E3tP7oDEykPMv@cluster0.gwpu1ni.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -36,6 +36,7 @@ async function run() {
 
     app.post('/users', async (req, res) => {
       const user = req.body;
+      console.log(user);
       const query = { email: user.email };
       const exitingUser = await userCollection.findOne(query);
       if (exitingUser) {
@@ -69,7 +70,7 @@ async function run() {
       try {
         const id = req.params.id;
         const item = req.body;
-        console.log(it);
+        console.log(item); // Corrected the variable name here
 
         // Validate the ID format
         if (!ObjectId.isValid(id)) {
@@ -150,7 +151,7 @@ async function run() {
             role: item.role,
           },
         };
-        const result = await bookingCollection.updateOne(filter, updatedDoc);
+        const result = await userCollection.updateOne(filter, updatedDoc);
         if (result.matchedCount === 0) {
           return res.status(404).send({ message: 'Booking not found' });
         }
@@ -168,6 +169,7 @@ async function run() {
       const query = { email: email };
       const result = await bookingCollection.find(query).toArray();
       res.send(result);
+      console.log(result);
     });
 
     app.get('/users', async (req, res) => {
@@ -185,6 +187,21 @@ async function run() {
     app.get('/features', async (req, res) => {
       const result = await featuresCollection.find().toArray();
       res.send(result);
+    });
+
+    // Delivary man
+
+    app.get('/Delivar', async (req, res) => {
+      try {
+        const role = req.query.role;
+        console.log(role);
+        const query = { role: role };
+        const result = await userCollection.find(query).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error('Error fetching delivery men:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
     });
 
     // Send a ping to confirm a successful connection
