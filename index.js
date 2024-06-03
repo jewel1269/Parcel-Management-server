@@ -33,6 +33,9 @@ async function run() {
     const bookingCollection = client
       .db('parcelSystemManagement')
       .collection('bookings');
+    const assignBookCollection = client
+      .db('parcelSystemManagement')
+      .collection('assignBook');
 
     app.post('/users', async (req, res) => {
       const user = req.body;
