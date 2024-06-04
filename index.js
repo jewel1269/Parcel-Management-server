@@ -112,7 +112,6 @@ async function run() {
       try {
         const id = req.params.id;
         const item = req.body;
-        console.log(item);
 
         // Validate the ID format
         if (!ObjectId.isValid(id)) {
@@ -219,6 +218,18 @@ async function run() {
         console.error('Error inserting item:', error);
         res.status(500).send({ message: 'Internal server error' });
       }
+    });
+
+    app.get('/assignBook', async (req, res) => {
+      const result = await assignBookCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/assignBook', async (req, res) => {
+      const email = req.query.email;
+      const query = { 'assignedDeliveryman.email': email };
+      const result = await assignBookCollection.find(query).toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
