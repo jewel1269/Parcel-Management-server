@@ -207,6 +207,20 @@ async function run() {
       }
     });
 
+    app.post('/assignBook', async (req, res) => {
+      try {
+        const item = req.body;
+        console.log(item);
+        delete item._id;
+
+        const result = await assignBookCollection.insertOne(item);
+        res.status(201).send(result); // Send a 201 status code for successful creation
+      } catch (error) {
+        console.error('Error inserting item:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
     // Send a ping to confirm a successful connection
     // await client.db('admin').command({ ping: 1 });
     console.log(
