@@ -108,6 +108,54 @@ async function run() {
       }
     });
 
+    app.patch('/updateDeliver/:email', async (req, res) => {
+      try {
+        const email = req.params.email;
+        const item = req.body;
+        console.log(item.status, email);
+
+        const filter = { email: email }; // Filter by email
+        const updatedDoc = {
+          $set: {
+            status: item.status,
+          },
+        };
+        const result = await bookingCollection.updateOne(filter, updatedDoc);
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Booking not found' });
+        }
+
+        res.send({ message: 'Booking updated successfully', result });
+      } catch (error) {
+        console.error('Error updating booking:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
+    app.patch('/updateDeliverBoking/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const item = req.body;
+        console.log(item.status, id);
+
+        const filter = { _id: new ObjectId(id) }; // Filter by email
+        const updatedDoc = {
+          $set: {
+            status: item.status,
+          },
+        };
+        const result = await bookingCollection.updateOne(filter, updatedDoc);
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Booking not found' });
+        }
+
+        res.send({ message: 'Booking updated successfully', result });
+      } catch (error) {
+        console.error('Error updating booking:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
     app.patch('/updateStatus/:id', async (req, res) => {
       try {
         const id = req.params.id;
@@ -210,6 +258,7 @@ async function run() {
       try {
         const item = req.body;
         console.log(item);
+        item.bokingId = item._id;
         delete item._id;
 
         const result = await assignBookCollection.insertOne(item);
