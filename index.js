@@ -132,7 +132,7 @@ async function run() {
       }
     });
 
-    app.patch('/updateDeliverBoking/:id', async (req, res) => {
+    app.patch('/updateDeliverBooking/:id', async (req, res) => {
       try {
         const id = req.params.id;
         const item = req.body;
