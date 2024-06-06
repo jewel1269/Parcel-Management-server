@@ -111,16 +111,22 @@ async function run() {
     app.patch('/updateDeliver/:email', async (req, res) => {
       try {
         const email = req.params.email;
-        const item = req.body;
-        console.log(item.status, email);
+        const status = req.body.status;
+        const deliveryManEmail = req.body.deliveryManEmail;
+        console.log(deliveryManEmail, status);
 
-        const filter = { email: email }; // Filter by email
-        const updatedDoc = {
+        const filter = { email: email };
+        const update = {
           $set: {
-            status: item.status,
+            status: status,
+            deliveryManEmail: deliveryManEmail,
           },
         };
-        const result = await bookingCollection.updateOne(filter, updatedDoc);
+
+        const result = await bookingCollection.updateOne(filter, update, {
+          upsert: true,
+        });
+
         if (result.matchedCount === 0) {
           return res.status(404).send({ message: 'Booking not found' });
         }
