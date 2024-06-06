@@ -36,6 +36,13 @@ async function run() {
     const assignBookCollection = client
       .db('parcelSystemManagement')
       .collection('assignBook');
+    const reviewsCollection = client
+      .db('parcelSystemManagement')
+      .collection('reviews');
+
+    const iconsCollection = client
+      .db('parcelSystemManagement')
+      .collection('icons');
 
     app.post('/users', async (req, res) => {
       const user = req.body;
@@ -56,8 +63,26 @@ async function run() {
       res.send(result);
     });
 
+    app.post('/reviews', async (req, res) => {
+      const item = req.body;
+      const result = await reviewsCollection.insertOne(item);
+      res.send(result);
+    });
+
     app.get('/bookings', async (req, res) => {
       const result = await bookingCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/icons', async (req, res) => {
+      const result = await iconsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get('/bookingsDelivered', async (req, res) => {
+      const status = req.query.status;
+      const query = { status: status };
+      const result = await bookingCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -112,7 +137,7 @@ async function run() {
       try {
         const email = req.params.email;
         const status = req.body.status;
-        const deliveryManEmail = req.body.deliveryManEmail;
+        const deliveryManEmail = req.body.deliveryManEmails;
         console.log(deliveryManEmail, status);
 
         const filter = { email: email };
