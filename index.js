@@ -289,10 +289,22 @@ async function run() {
     });
 
     app.get('/usersInfo', async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
-      const result = await userCollection.findOne(query);
-      res.send(result);
+      try {
+        const email = req.query.email;
+        console.log(email);
+        const query = { email: email };
+        const result = await userCollection.findOne(query);
+
+        if (result) {
+          res.send(result);
+          console.log(result);
+        } else {
+          res.status(404).send('User not found');
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).send('Error fetching user');
+      }
     });
 
     app.get('/features', async (req, res) => {
@@ -335,9 +347,9 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/assignBook', async (req, res) => {
+    app.get('/deliverAssignBook', async (req, res) => {
       const email = req.query.email;
-      const query = { 'assignedDeliveryman.email': email };
+      const query = { assignedDeliveryman: email };
       const result = await assignBookCollection.find(query).toArray();
       res.send(result);
     });
