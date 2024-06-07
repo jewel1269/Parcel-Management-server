@@ -138,13 +138,14 @@ async function run() {
         const id = req.params.id;
         const status = req.body.status;
         const deliveryManEmail = req.body.Email;
-        console.log(deliveryManEmail, status);
+        // console.log(deliveryManEmail, status);
 
         const filter = { _id: new ObjectId(id) || new id() };
         const update = {
           $set: {
             status: status,
             deliveryManEmail: deliveryManEmail,
+            deLivaryId: deLivaryIds,
           },
         };
 
@@ -167,14 +168,16 @@ async function run() {
       try {
         const email = req.params.email;
         const status = req.body.status;
-        const deliveryManEmail = req.body.deliveryManEmails;
-        // console.log(deliveryManEmail, status);
+        const deliveryManEmail = req.body.deliveryEmail;
+        const deLivaryIds = req.body.deLivaryId;
+        console.log(deliveryManEmail, status, deLivaryIds);
 
         const filter = { email: email };
         const update = {
           $set: {
             status: status,
             deliveryManEmail: deliveryManEmail,
+            deLivaryId: deLivaryIds,
           },
         };
 
@@ -197,7 +200,7 @@ async function run() {
       try {
         const id = req.params.id;
         const item = req.body;
-        // console.log(item.status, id);
+        console.log(item.status, id);
 
         const filter = { _id: new ObjectId(id) }; // Filter by email
         const updatedDoc = {
