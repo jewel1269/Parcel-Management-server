@@ -133,12 +133,42 @@ async function run() {
       }
     });
 
+    app.patch('/updateDeliveredStatus/:id', async (req, res) => {
+      try {
+        const id = req.params.id;
+        const status = req.body.status;
+        const deliveryManEmail = req.body.Email;
+        console.log(deliveryManEmail, status);
+
+        const filter = { _id: new ObjectId(id) || new id() };
+        const update = {
+          $set: {
+            status: status,
+            deliveryManEmail: deliveryManEmail,
+          },
+        };
+
+        const result = await assignBookCollection.updateOne(filter, update, {
+          upsert: true,
+        });
+
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Booking not found' });
+        }
+
+        res.send({ message: 'Booking updated successfully', result });
+      } catch (error) {
+        console.error('Error updating booking:', error);
+        res.status(500).send({ message: 'Internal server error' });
+      }
+    });
+
     app.patch('/updateDeliver/:email', async (req, res) => {
       try {
         const email = req.params.email;
         const status = req.body.status;
         const deliveryManEmail = req.body.deliveryManEmails;
-        console.log(deliveryManEmail, status);
+        // console.log(deliveryManEmail, status);
 
         const filter = { email: email };
         const update = {
@@ -167,7 +197,7 @@ async function run() {
       try {
         const id = req.params.id;
         const item = req.body;
-        console.log(item.status, id);
+        // console.log(item.status, id);
 
         const filter = { _id: new ObjectId(id) }; // Filter by email
         const updatedDoc = {
