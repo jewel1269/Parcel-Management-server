@@ -145,7 +145,6 @@ async function run() {
           $set: {
             status: status,
             deliveryManEmail: deliveryManEmail,
-            deLivaryId: deLivaryIds,
           },
         };
 
@@ -164,26 +163,21 @@ async function run() {
       }
     });
 
-    app.patch('/updateDeliver/:email', async (req, res) => {
+    app.patch('/updateDeliver/:bokingId', async (req, res) => {
       try {
-        const email = req.params.email;
-        const status = req.body.status;
-        const deliveryManEmail = req.body.deliveryEmail;
-        const deLivaryIds = req.body.deLivaryId;
-        console.log(deliveryManEmail, status, deLivaryIds);
-
-        const filter = { email: email };
+        const id = req.params.bokingId;
+        const item = req.body.status;
+        console.log(id, item);
+        const filter = { _id: new ObjectId(id) };
         const update = {
           $set: {
-            status: status,
-            deliveryManEmail: deliveryManEmail,
-            deLivaryId: deLivaryIds,
+            status: item,
           },
         };
-
         const result = await bookingCollection.updateOne(filter, update, {
           upsert: true,
         });
+        console.log(result);
 
         if (result.matchedCount === 0) {
           return res.status(404).send({ message: 'Booking not found' });
@@ -199,16 +193,28 @@ async function run() {
     app.patch('/updateDeliverBooking/:id', async (req, res) => {
       try {
         const id = req.params.id;
-        const item = req.body;
-        console.log(item.status, id);
+        const { status, approximateDate, assignedDeliveryman, delivaryId } =
+          req.body;
+        // console.log(
+        //   'hello I am here ',
+        //   assignedDeliveryman,
+        //   status,
+        //   delivaryId
+        // );
 
-        const filter = { _id: new ObjectId(id) }; // Filter by email
+        const filter = { _id: new ObjectId(id) };
         const updatedDoc = {
           $set: {
-            status: item.status,
+            status: status,
+            deliveryManEmail: assignedDeliveryman,
+            delivaryId: delivaryId,
+            approximateDate: approximateDate,
           },
         };
-        const result = await bookingCollection.updateOne(filter, updatedDoc);
+        const result = await bookingCollection.updateOne(filter, updatedDoc, {
+          upsert: true,
+        });
+        // console.log('result', result);
         if (result.matchedCount === 0) {
           return res.status(404).send({ message: 'Booking not found' });
         }
@@ -354,6 +360,15 @@ async function run() {
       const email = req.query.email;
       const query = { assignedDeliveryman: email };
       const result = await assignBookCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    //review
+
+    app.get('/AllReviews', async (req, res) => {
+      const email = req.query.email;
+      const query = { deliveryManEmail: email };
+      const result = await reviewsCollection.find(query).toArray();
       res.send(result);
     });
 
