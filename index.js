@@ -323,13 +323,14 @@ async function run() {
 
     // Delivary man
 
-    app.get('/Delivar', async (req, res) => {
+    app.get('/deliverymen', async (req, res) => {
       try {
         const role = req.query.role;
         console.log(role);
         const query = { role: role };
         const result = await userCollection.find(query).toArray();
         res.send(result);
+        console.log(result);
       } catch (error) {
         console.error('Error fetching delivery men:', error);
         res.status(500).send({ message: 'Internal server error' });
