@@ -330,11 +330,18 @@ async function run() {
         const query = { role: role };
         const result = await userCollection.find(query).toArray();
         res.send(result);
-        console.log(result);
+        // console.log(result
       } catch (error) {
         console.error('Error fetching delivery men:', error);
         res.status(500).send({ message: 'Internal server error' });
       }
+    });
+
+    app.delete('/itemDelete/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await assignBookCollection.deleteOne(query);
+      res.send(result);
     });
 
     app.post('/assignBook', async (req, res) => {
